@@ -334,7 +334,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 }
 ```
 
-### 并添加和定时器有关的hal库文件
+#### 并添加和定时器有关的hal库文件
 
 ![image-20240424213234758](http://qny.expressisland.cn/gdou24/image-20240424213234758.png)
 
@@ -427,3 +427,13 @@ void interrupt_task(void *pvParameters)
 
 ### 测试运行
 
+![image-20240425094306349](http://qny.expressisland.cn/gdou24/image-20240425094306349.png)
+
+#### 借用下文档里的图
+
+![image-20240425094822404](http://qny.expressisland.cn/gdou24/image-20240425094822404.png)
+
+* 一开始没有关闭中断，所以 TIM3 和 TIM5 都正常运行，红框所示部分。
+* 当任务 interrupt_task()运行了 5 次以后就关闭了中断，此时由于 TIM5 的中断优先级为 5，等于configMAX_SYSCALL_INTERRUPT_PRIORITY，因此TIM5 被关闭。
+* 但是，TIM3 的中断优先级高于configMAX_SYSCALL_INTERRUPT_PRIORITY，不会被关闭，所以 TIM3 正常运行，绿框所示部分。
+* 中断关闭 5S 以后就会调用函数 portENABLE_INTERRUPTS()重新打开中断，重新打开中断以后 TIM5 恢复运行，蓝框所示部分。
